@@ -6,6 +6,8 @@ package edu.harding.tictactoe;
  * is X and the computer is O.
  */
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -18,51 +20,29 @@ public class TicTacToeGame {
     public static final char HUMAN_PLAYER = 'X';
     public static final char COMPUTER_PLAYER = 'O';
     public static final char OPEN_SPOT = ' ';
-
-    private char mBoard[] = {OPEN_SPOT,OPEN_SPOT,OPEN_SPOT,OPEN_SPOT,OPEN_SPOT,OPEN_SPOT,OPEN_SPOT,OPEN_SPOT,OPEN_SPOT};
     private final int BOARD_SIZE = 9;
-
+    private char mBoard[] = new char[BOARD_SIZE];
     private Random mRand;
+    // The computer's difficulty levels
+    public enum DifficultyLevel {Easy, Harder, Expert};
+    // Current difficulty level
+    private DifficultyLevel mDifficultyLevel = DifficultyLevel.Expert;
 
     public TicTacToeGame() {
 
+        //Fill the the board array with empty spaces
+        Arrays.fill(mBoard, OPEN_SPOT);
+
         // Seed the random number generator
         mRand = new Random();
+    }
 
-//        char turn = HUMAN_PLAYER;    // Human starts first
-//        int  win = 0;                // Set to 1, 2, or 3 when game is over
-//
-//        // Keep looping until someone wins or a tie
-//        while (win == 0)
-//        {
-//            displayBoard();
-//
-//            if (turn == HUMAN_PLAYER)
-//            {
-//                getUserMove();
-//                turn = COMPUTER_PLAYER;
-//            }
-//            else
-//            {
-//                getComputerMove();
-//                turn = HUMAN_PLAYER;
-//            }
-//
-//            win = checkForWinner();
-//        }
-//
-//        displayBoard();
-//
-//        // Report the winner
-//        System.out.println();
-//        if (win == 1)
-//            System.out.println("It's a tie.");
-//        else if (win == 2)
-//            System.out.println(HUMAN_PLAYER + " wins!");
-//        else if (win == 3)
-//            System.out.println(COMPUTER_PLAYER + " wins!");
-//        else
-//            System.out.println("There is a logic problem!");
+    public DifficultyLevel getDifficultyLevel() {
+        return mDifficultyLevel;
+    }
+
+    public void setDifficultyLevel(DifficultyLevel difficultyLevel) {
+        mDifficultyLevel = difficultyLevel;
     }
 
     private void displayBoard()	{
@@ -145,94 +125,123 @@ public class TicTacToeGame {
         return 1;
     }
 
-//    void getUserMove()
-//    {
-//        // Eclipse throws a NullPointerException with Console.readLine
-//        // Known bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=122429
-//        //Console console = System.console();
-//
-//        Scanner s = new Scanner(System.in);
-//
-//        int move = -1;
-//
-//        while (move == -1) {
-//            try {
-//                System.out.print("Enter your move: ");
-//                move = s.nextInt();
-//
-//                while (move < 1 || move > BOARD_SIZE ||
-//                        mBoard[move-1] == HUMAN_PLAYER || mBoard[move-1] == COMPUTER_PLAYER) {
-//
-//                    if (move < 1 || move > BOARD_SIZE)
-//                        System.out.println("Please enter a move between 1 and " + BOARD_SIZE + ".");
-//                    else
-//                        System.out.println("That space is occupied.  Please choose another space.");
-//
-//                    System.out.print("Enter your move: ");
-//                    move = s.nextInt();
-//                }
-//            }
-//            catch (InputMismatchException ex) {
-//                System.out.println("Please enter a number between 1 and " + BOARD_SIZE + ".");
-//                s.next();  // Get next line so we start fresh
-//                move = -1;
-//            }
-//        }
-//
-//        mBoard[move-1] = HUMAN_PLAYER;
-//    }
-
-    public int getComputerMove()
-    {
+    private int getRandomMove(){
         int move;
-
-        // First see if there's a move O can make to win
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
-                char curr = mBoard[i];
-                //setMove(COMPUTER_PLAYER, i);
-                mBoard[i] = COMPUTER_PLAYER;
-                if (checkForWinner() == 3) {
-                    System.out.println("Computer is moving to " + (i + 1));
-                    return i;
-                }
-                else
-                    //setMove(curr, i);
-                    mBoard[i] = curr;
-            }
-        }
-
-        // See if there's a move O can make to block X from winning
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
-                char curr = mBoard[i];   // Save the current number
-                //setMove(HUMAN_PLAYER, i);
-                mBoard[i] = HUMAN_PLAYER;
-                if (checkForWinner() == 2) {
-                    //setMove(COMPUTER_PLAYER, i);
-                    mBoard[i] = COMPUTER_PLAYER;
-                    System.out.println("Computer is moving to " + (i + 1));
-                    return i;
-                }
-                else
-                    //setMove(curr, i);
-                    mBoard[i] = curr;
-            }
-        }
-
-        // Generate random move
         do
         {
             move = mRand.nextInt(BOARD_SIZE);
         } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
-
-        System.out.println("Computer is moving to " + (move + 1));
-
-        //setMove(COMPUTER_PLAYER, move);
         mBoard[move] = COMPUTER_PLAYER;
         return move;
-
     }
+
+    private int getWinningMove(){
+        int move = -1;
+        // See if there's a move O can make to win
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                char curr = mBoard[i];
+                mBoard[i] = COMPUTER_PLAYER;
+                if (checkForWinner() == 3) {
+                    move =  i;
+                    break;
+                }
+                else
+                    mBoard[i] = curr;
+            }
+        }
+        return move;
+    }
+
+    private int getBlockingMove(){
+        int move = -1;
+        // See if there's a move O can make to block X from winning
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                char curr = mBoard[i];   // Save the current number
+                mBoard[i] = HUMAN_PLAYER;
+                if (checkForWinner() == 2) {
+                    mBoard[i] = COMPUTER_PLAYER;
+                    move = i;
+                    break;
+                }
+                else
+                    mBoard[i] = curr;
+            }
+        }
+        return move;
+    }
+
+    public int getComputerMove() {
+
+        int move = -1;
+
+        if (mDifficultyLevel == DifficultyLevel.Easy)
+            move = getRandomMove();
+        else if (mDifficultyLevel == DifficultyLevel.Harder) {
+            move = getWinningMove();
+            if (move == -1)
+                move = getRandomMove();
+        }
+        else if (mDifficultyLevel == DifficultyLevel.Expert) {
+
+            // Try to win, but if that's not possible, block.
+            // If that's not possible, move anywhere.
+            move = getWinningMove();
+            if (move == -1)
+                move = getBlockingMove();
+            if (move == -1)
+                move = getRandomMove();
+        }
+
+        return move;
+    }
+
+
+//    public int getComputerMove()
+//    {
+//        int move;
+//
+//        // First see if there's a move O can make to win
+//        for (int i = 0; i < BOARD_SIZE; i++) {
+//            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+//                char curr = mBoard[i];
+//                mBoard[i] = COMPUTER_PLAYER;
+//                if (checkForWinner() == 3) {
+//                    System.out.println("Computer is moving to " + (i + 1));
+//                    return i;
+//                }
+//                else
+//                    mBoard[i] = curr;
+//            }
+//        }
+//
+//        // See if there's a move O can make to block X from winning
+//        for (int i = 0; i < BOARD_SIZE; i++) {
+//            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+//                char curr = mBoard[i];   // Save the current number
+//                mBoard[i] = HUMAN_PLAYER;
+//                if (checkForWinner() == 2) {
+//                    mBoard[i] = COMPUTER_PLAYER;
+//                    System.out.println("Computer is moving to " + (i + 1));
+//                    return i;
+//                }
+//                else
+//                    mBoard[i] = curr;
+//            }
+//        }
+//
+//        // Generate random move
+//        do
+//        {
+//            move = mRand.nextInt(BOARD_SIZE);
+//        } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
+//
+//
+//        mBoard[move] = COMPUTER_PLAYER;
+//        return move;
+//
+//    }
 
 }
 

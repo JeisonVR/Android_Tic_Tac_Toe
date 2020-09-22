@@ -55,4 +55,27 @@
         android:gravity="center_horizontal" 		      android:layout_marginTop="20dp"
         android:textSize="20dp" />
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_horizontal"
+        android:background="#EAEAEA" >
+
+    <TextView android:id="@+id/human_score"    	           	android:layout_width="wrap_content"
+        android:layout_height="wrap_content"    			android:text="human_score"
+        android:gravity="center_horizontal" 		        android:layout_marginTop="20dp"
+        android:textSize="20dp"                             /> />
+
+    <TextView android:id="@+id/android_score"    	        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"    			android:text="android_score"
+        android:gravity="center_horizontal" 		        android:layout_marginTop="20dp"
+        android:textSize="20dp"                             android:layout_toRightOf="@+id/human_score" />
+
+    <TextView android:id="@+id/ties_counter"    	        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"    			android:text="ties_counter"
+        android:gravity="center_horizontal" 		        android:layout_marginTop="20dp"
+        android:textSize="20dp"                             android:layout_toRightOf="@+id/android_score"/>
+
+    </RelativeLayout>
 </LinearLayout>
